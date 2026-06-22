@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevQuery — Interactive Developer Assessments</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="theme-vercel">
+    <div id="app">
+        <!-- Navigation bar -->
+        <nav class="app-nav">
+            <div class="nav-left">
+                <span class="terminal-prompt">$</span>
+                <span class="logo">DevQuery</span>
+            </div>
+            <div class="nav-actions">
+                <button id="sound-toggle" class="nav-btn" aria-label="Toggle Sound">
+                    <span class="sound-icon">🔊</span>
+                </button>
+                <select id="theme-selector" class="theme-dropdown" aria-label="Select Theme">
+                    <option value="theme-vercel">Vercel Dark</option>
+                    <option value="theme-nord">Nord Frost</option>
+                    <option value="theme-gruvbox">Gruvbox Retro</option>
+                    <option value="theme-light">System Light</option>
+                </select>
+            </div>
+        </nav>
+
+        <!-- Main Workspace -->
+        <main id="main-content">
+            <!-- Screen 1: Dashboard -->
+            <section id="dashboard-screen" class="screen active">
+                <div class="dashboard-hero">
+                    <h1>Interactive Engineering Assessments.</h1>
+                    <p>Test your systems design, language quirks, and frontend skills with high-fidelity production questions.</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Left Column: Categories -->
+                    <div class="dashboard-panel">
+                        <h2>Select Category</h2>
+                        <div class="category-list">
+                            <div class="category-card" data-category="all">
+                                <div class="cat-info">
+                                    <h3>Mixed Practice</h3>
+                                    <p>A comprehensive shuffle of all topics</p>
+                                </div>
+                                <span class="cat-count">All</span>
+                            </div>
+                            <div class="category-card" data-category="Frontend">
+                                <div class="cat-info">
+                                    <h3>Frontend & CSS</h3>
+                                    <p>DOM quirks, React internals, and Flex/Grid rendering</p>
+                                </div>
+                                <span class="cat-count"></span>
+                            </div>
+                            <div class="category-card" data-category="Systems">
+                                <div class="cat-info">
+                                    <h3>Systems & Git</h3>
+                                    <p>Command line tools, memory management, and network protocols</p>
+                                </div>
+                                <span class="cat-count"></span>
+                            </div>
+                            <div class="category-card" data-category="JSQuirks">
+                                <div class="cat-info">
+                                    <h3>JS & Core Engine</h3>
+                                    <p>Event loops, asynchronous patterns, and prototype chain</p>
+                                </div>
+                                <span class="cat-count"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Performance and custom tests -->
+                    <div class="dashboard-panel">
+                        <h2>Session History</h2>
+                        <div id="chart-container" class="chart-container">
+                            <!-- SVG graph will be injected here -->
+                            <p class="chart-placeholder">Run an assessment to visualize score analytics.</p>
+                        </div>
+                        
+                        <div class="dashboard-actions">
+                            <button id="start-assessment-btn" class="btn btn-primary btn-block">Launch Assessment</button>
+                            <button id="go-creator-btn" class="btn btn-secondary btn-block">Open Custom Builder</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Screen 2: Quiz Workspace -->
+            <section id="quiz-screen" class="screen">
+                <div class="workspace-header">
+                    <div class="header-meta">
+                        <span id="question-category" class="meta-tag">Category</span>
+                        <div class="timer-wrapper">
+                            <span class="timer-icon">⏱</span>
+                            <span id="timer-text">00:00</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span>Question <span id="current-q">0</span> of <span id="total-q">0</span></span>
+                        <span>Streak: <span id="streak-indicator">0</span> 🔥</span>
+                    </div>
+                </div>
+
+                <div class="assessment-container">
+                    <div class="question-body">
+                        <h2 id="question-text">Loading question...</h2>
+                        <div id="code-snippet-container" class="code-snippet-container hidden">
+                            <!-- Code Snippet with Syntax Highlighting -->
+                        </div>
+                    </div>
+
+                    <div id="options-container" class="options-container">
+                        <!-- Dynamic Options Input (Options or text box) -->
+                    </div>
+
+                    <div id="feedback-panel" class="feedback-panel hidden">
+                        <div class="feedback-header">
+                            <span id="feedback-badge" class="badge">Correct</span>
+                            <span id="feedback-title">Result Details</span>
+                        </div>
+                        <p id="explanation-text">Explanation goes here...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Screen 3: Assessment Summary / Results -->
+            <section id="result-screen" class="screen">
+                <div class="result-card">
+                    <div class="result-header">
+                        <h1>Performance Summary</h1>
+                        <p id="result-message">Great job! Check your metrics below.</p>
+                    </div>
+
+                    <div class="score-display-panel">
+                        <div class="score-radial">
+                            <svg viewBox="0 0 100 100" class="radial-svg">
+                                <circle cx="50" cy="50" r="40" class="radial-bg"></circle>
+                                <circle cx="50" cy="50" r="40" class="radial-fill" id="radial-progress-fill"></circle>
+                            </svg>
+                            <div class="score-numbers">
+                                <span id="score-numerator">0</span>
+                                <span class="score-separator">/</span>
+                                <span id="score-denominator">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="label">Accuracy</span>
+                            <span id="metric-accuracy" class="value">0%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="label">Peak Streak</span>
+                            <span id="metric-streak" class="value">0</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="label">Total Duration</span>
+                            <span id="metric-duration" class="value">0s</span>
+                        </div>
+                    </div>
+
+                    <div id="earned-achievements" class="achievements-section">
+                        <!-- Achievement badges -->
+                    </div>
+
+                    <div class="result-footer-actions">
+                        <button id="show-review-btn" class="btn btn-secondary">Review Answers</button>
+                        <button id="exit-btn" class="btn btn-primary">Go to Dashboard</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Screen 4: Quiz Review Dashboard -->
+            <section id="review-screen" class="screen">
+                <div class="review-header">
+                    <h2>Review Session Answers</h2>
+                    <button id="close-review-btn" class="btn btn-secondary">Back to Results</button>
+                </div>
+                <div id="review-timeline" class="review-timeline">
+                    <!-- Review cards dynamically loaded -->
+                </div>
+            </section>
+
+            <!-- Screen 5: Custom Quiz Builder -->
+            <section id="creator-screen" class="screen">
+                <div class="creator-header">
+                    <h2>Custom Question Builder</h2>
+                    <button id="exit-creator-btn" class="btn btn-secondary">Back to Dashboard</button>
+                </div>
+
+                <form id="custom-question-form" class="creator-form">
+                    <div class="form-group">
+                        <label for="new-q-category">Category</label>
+                        <select id="new-q-category" required>
+                            <option value="Frontend">Frontend & CSS</option>
+                            <option value="Systems">Systems & Git</option>
+                            <option value="JSQuirks">JS & Core Engine</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-q-text">Question Prompt</label>
+                        <textarea id="new-q-text" placeholder="Write question details here..." required rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-q-code">Code Block (Optional, supports JS, HTML, CSS syntax)</label>
+                        <textarea id="new-q-code" class="monospace-textarea" placeholder="// Paste your code here..." rows="6"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-q-type">Answer Format</label>
+                        <select id="new-q-type" required>
+                            <option value="single">Single Choice (Radio Buttons)</option>
+                            <option value="multi">Multiple Choice (Checkboxes)</option>
+                            <option value="fib">Text Input (Exact Match)</option>
+                        </select>
+                    </div>
+
+                    <div id="options-builder-container" class="form-group">
+                        <label>Options & Correct Answers</label>
+                        <div id="options-inputs-list" class="options-inputs-list">
+                            <!-- Dynamic option inputs loaded here -->
+                        </div>
+                        <button type="button" id="add-option-row-btn" class="btn btn-small btn-secondary">+ Add Option</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-q-explanation">Explanation</label>
+                        <textarea id="new-q-explanation" placeholder="Provide background theory or reasoning..." required rows="3"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save and Load Question</button>
+                        <button type="button" id="clear-custom-questions-btn" class="btn btn-danger">Clear All Custom Questions</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <!-- Global Action Footer for Quiz workspace -->
+        <footer id="assessment-footer" class="app-footer hidden">
+            <button id="skip-question-btn" class="btn btn-text">Skip</button>
+            <div class="footer-primary-actions">
+                <button id="check-answer-btn" class="btn btn-primary" disabled>Check Answer</button>
+                <button id="continue-btn" class="btn btn-primary hidden">Continue</button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
